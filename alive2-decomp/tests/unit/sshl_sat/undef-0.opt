@@ -1,0 +1,6 @@
+Name: t0
+%r = sshl_sat i8 %x, %y
+  =>
+%r = undef
+
+; ERROR: Target's return value is more undefined for i8 %r

@@ -1,0 +1,3 @@
+[submodule "llvm-instruction-tracking"]
+	path = llvm-instruction-tracking
+	url = https://github.com/mikekben/llvm-instruction-tracking.git

@@ -1,0 +1,10 @@
+%a = call i4 @f(i4 poison) memory(none)
+%b = call i4 @f(i4 poison) memory(none)
+%add = add i4 %a, %b
+%eq = icmp eq %add, 2
+assume(%eq)
+ret true
+  =>
+ret false
+
+; ERROR: Value mismatch

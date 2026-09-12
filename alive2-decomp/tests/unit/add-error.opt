@@ -1,0 +1,4 @@
+; ERROR: Value mismatch
+%x = shl i8 %i, 1
+  =>
+%x = add %i, %i

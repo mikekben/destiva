@@ -1,0 +1,4 @@
+; ERROR: Target's return value is more undefined
+%r = 0
+  =>
+%r = undef

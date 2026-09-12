@@ -1,0 +1,46 @@
+Name: add max
+%r = uadd_sat i4 %x, -1
+  =>
+%r = -1
+
+Name: uadd undef
+%r = uadd_sat i7 %x, undef
+  =>
+%r = %x
+
+Name: sadd undef
+%r = sadd_sat i7 %x, undef
+  =>
+%r = %x
+
+Name: sadd 0
+%r = sadd_sat i7 %x, 0
+  =>
+%r = %x
+
+Name: uadd combine
+%a = uadd_sat i3 %x, %val2
+%r = uadd_sat %a, %val
+  =>
+%b = uadd_sat %val, %val2
+%r = uadd_sat %x, %b
+
+Name: ssub overflow
+%r = ssub_sat i4 4, -5
+  =>
+%r = 7
+
+Name: ssub underflow
+%r = ssub_sat i4 -4, 6
+  =>
+%r = -8
+
+Name: usub overflow
+%r = usub_sat i8 5, 7
+  =>
+%r = 0
+
+Name: usub undef
+%r = usub_sat i7 %x, undef
+  =>
+%r = %x

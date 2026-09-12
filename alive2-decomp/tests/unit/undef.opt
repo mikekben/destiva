@@ -1,0 +1,23 @@
+; a comment
+Name: add undef1
+%r = add undef, 1
+  =>
+%r = undef  ; undef + 1 -> undef
+
+
+Name: add undef2
+%r = add i11 undef, %in
+  =>
+%r = undef  ; undef + x -> undef
+
+
+Name: add2
+%x = add i4 %i, %i
+  =>
+%x = shl i4 %i, 1
+
+
+Name: undef2
+%r = undef
+  =>
+%r = 0

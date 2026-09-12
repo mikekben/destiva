@@ -1,0 +1,95 @@
+; ModuleID = 'bench/ph7.ll'
+source_filename = "ph7/ph7.c"
+target datalayout = "e-m:e-p270:32:32-p271:32:32-p272:64:64-i64:64-i128:128-f80:128-n8:16:32:64-S128"
+target triple = "x86_64-unknown-linux-gnu"
+
+%struct.ph7_vm = type { %struct.SyMemBackend, ptr, %struct.SySet, ptr, ptr, %struct.SyPRNGCtx, %struct.SySet, %struct.SySet, ptr, %struct.SySet, %struct.SyHash, %struct.SyHash, %struct.SyHash, %struct.SyHash, %struct.SyHash, %struct.SyHash, %struct.SyBlob, %struct.SyBlob, %struct.SyBlob, %struct.SySet, %struct.SySet, %struct.SySet, %struct.SySet, %struct.SySet, %struct.SySet, %struct.SySet, ptr, %struct.ph7_value, [2 x %struct.ph7_value], [2 x %struct.ph7_value], ptr, ptr, ptr, i32, i32, i32, i32, i32, i32, i32, i32, ptr, i32, %struct.ph7_output_consumer, i32, %struct.ph7_value, ptr, ptr, i32, i32, %struct.SySet, ptr, i32, i32, %struct.ph7_gen_state, ptr, ptr, i32 }
+%struct.SyMemBackend = type { ptr, ptr, ptr, i32, ptr, ptr, ptr, i32, [15 x ptr] }
+%struct.SyPRNGCtx = type { i8, i8, [256 x i8], i16 }
+%struct.SyHash = type { ptr, ptr, ptr, ptr, ptr, i32, ptr, i32 }
+%struct.SyBlob = type { ptr, ptr, i32, i32, i32 }
+%struct.ph7_output_consumer = type { ptr, ptr, ptr, ptr }
+%struct.ph7_value = type { double, %union.anon, i32, ptr, %struct.SyBlob, i32 }
+%union.anon = type { i64 }
+%struct.SySet = type { ptr, ptr, i32, i32, i32, i32, ptr }
+%struct.ph7_gen_state = type { ptr, %struct.SyHash, %struct.SyHash, %struct.SyHash, ptr, %struct.GenBlock, ptr, ptr, %struct.SySet, %struct.SySet, %struct.SyBlob, %struct.SyBlob, ptr, ptr, i32, ptr, ptr, ptr }
+%struct.GenBlock = type { ptr, ptr, i32, i32, %struct.SySet, ptr, i8, %struct.SySet }
+%struct.io_private = type { ptr, ptr, %struct.SyBlob, i32, i32 }
+
+@sPHP_Stream = external hidden constant { ptr, i32, [4 x i8], ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr, ptr }, align 8
+
+; Function Attrs: nounwind uwtable
+declare hidden ptr @SyMemBackendAlloc(ptr noundef, i32 noundef) #0
+
+; Function Attrs: nounwind uwtable
+declare hidden void @InitIOPrivate(ptr noundef, ptr noundef, ptr noundef) #0
+
+; Function Attrs: nounwind uwtable
+declare hidden ptr @PHPStreamDataInit(ptr noundef, i32 noundef) #0
+
+; Function Attrs: nounwind uwtable
+define hidden ptr @PH7_ExportStdout(ptr noundef %pVm) #0 {
+entry:
+  %retval = alloca ptr, align 8
+  %pVm.addr = alloca ptr, align 8
+  %pOut = alloca ptr, align 8
+  store ptr %pVm, ptr %pVm.addr, align 8
+  %0 = load ptr, ptr %pVm.addr, align 8
+  %pStdout = getelementptr inbounds nuw %struct.ph7_vm, ptr %0, i32 0, i32 31
+  %1 = load ptr, ptr %pStdout, align 8
+  %cmp = icmp eq ptr %1, null
+  br i1 %cmp, label %if.then, label %if.else
+
+if.then:                                          ; preds = %entry
+  %2 = load ptr, ptr %pVm.addr, align 8
+  %sAllocator = getelementptr inbounds nuw %struct.ph7_vm, ptr %2, i32 0, i32 0
+  %call = call ptr @SyMemBackendAlloc(ptr noundef %sAllocator, i32 noundef 56)
+  store ptr %call, ptr %pOut, align 8
+  %3 = load ptr, ptr %pOut, align 8
+  %cmp1 = icmp eq ptr %3, null
+  br i1 %cmp1, label %if.then2, label %if.end
+
+if.then2:                                         ; preds = %if.then
+  store ptr null, ptr %retval, align 8
+  br label %return
+
+if.end:                                           ; preds = %if.then
+  %4 = load ptr, ptr %pVm.addr, align 8
+  %5 = load ptr, ptr %pOut, align 8
+  call void @InitIOPrivate(ptr noundef %4, ptr noundef @sPHP_Stream, ptr noundef %5)
+  %6 = load ptr, ptr %pVm.addr, align 8
+  %call3 = call ptr @PHPStreamDataInit(ptr noundef %6, i32 noundef 2)
+  %7 = load ptr, ptr %pOut, align 8
+  %pHandle = getelementptr inbounds nuw %struct.io_private, ptr %7, i32 0, i32 1
+  store ptr %call3, ptr %pHandle, align 8
+  %8 = load ptr, ptr %pOut, align 8
+  %9 = load ptr, ptr %pVm.addr, align 8
+  %pStdout4 = getelementptr inbounds nuw %struct.ph7_vm, ptr %9, i32 0, i32 31
+  store ptr %8, ptr %pStdout4, align 8
+  %10 = load ptr, ptr %pOut, align 8
+  store ptr %10, ptr %retval, align 8
+  br label %return
+
+if.else:                                          ; preds = %entry
+  %11 = load ptr, ptr %pVm.addr, align 8
+  %pStdout5 = getelementptr inbounds nuw %struct.ph7_vm, ptr %11, i32 0, i32 31
+  %12 = load ptr, ptr %pStdout5, align 8
+  store ptr %12, ptr %retval, align 8
+  br label %return
+
+return:                                           ; preds = %if.else, %if.end, %if.then2
+  %13 = load ptr, ptr %retval, align 8
+  ret ptr %13
+}
+
+attributes #0 = { nounwind uwtable "frame-pointer"="all" "min-legal-vector-width"="0" "no-trapping-math"="true" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+cmov,+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "tune-cpu"="generic" }
+
+!llvm.module.flags = !{!0, !1, !2, !3, !4}
+!llvm.ident = !{!5}
+
+!0 = !{i32 1, !"wchar_size", i32 4}
+!1 = !{i32 8, !"PIC Level", i32 2}
+!2 = !{i32 7, !"PIE Level", i32 2}
+!3 = !{i32 7, !"uwtable", i32 2}
+!4 = !{i32 7, !"frame-pointer", i32 2}
+!5 = !{!"clang version 23.0.0git (https://github.com/llvm/llvm-project 027447c61724385ae82f0a8dea34b45da2fd4c39)"}
